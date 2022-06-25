@@ -1,0 +1,63 @@
+Parser:
+-   module: OnlineChatromParser
+    name: Chatroom
+    chat_log_file_path: /Users/xxx/Downloads/yyy/chatroom.txt
+    username1: xxx
+    username2: yyy
+    timezone_code: HKT
+-   module: KakaoTalkParser
+    name: Kakao Talk 1
+    res_dir: /Users/xxx/Downloads/Kakao Talk Export
+    attachment_dir: /Users/xxx/Downloads/MediaStorage
+    chat_log_file_path: /Users/xxx/Downloads/Kakao Talk Export/KakaoTalkChats.txt
+-   module: KakaoTalkParser
+    name: Kakao Talk 2
+    res_dir: /Users/xxx/Downloads/Kakao Talk Export
+    attachment_dir: /Users/xxx/Downloads/MediaStorage
+    chat_log_file_path: /Users/xxx/Downloads/Kakao Talk Export/KakaoTalkChats.txt
+-   module: LineParser
+    name: Line
+    db_path: /Users/xxx/Downloads/line/naver_line
+    res_dir: Users/xxx/Downloads/line/chats
+    attachment_dir: /Users/xxx/Downloads/line/attachment
+    chat_log_file_path: /Users/xxx/Downloads/line/Chat history with yyy.txt
+-   module: MessengerParser
+    name: Messenger
+    chat_log_file_path: /Users/xxx/Downloads/yyy/facebook-xxx/messages/inbox/yyy/message_1.html
+    res_dir: /Users/xxx/Downloads/yyy/facebook-xxx
+    attachment_dir: /Users/xxx/Downloads/yyy
+-   module: TelegramParser
+    name: Telegram
+    chat_log_dir: /Users/xxx/Downloads/yyy/ChatExport_2022-06-05
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+-   module: WeChatParser
+    name: WeChat
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    chat_log_file_path: /Users/xxx/Downloads/yyy/WeChat Old/yyy.txt
+    res_dir: /Users/xxx/Downloads/yyy/WeChat Old/resource
+    db_path: /Users/xxx/Downloads/yyy/WeChat Old/decrypted.db
+-   module: WhatsAppParser
+    name: WhatsApp
+    chat_log_file_path: /Users/xxx/Downloads/yyy/WhatsApp/WhatsApp Chat with yyy/WhatsApp Chat with yyy.txt
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    res_dir: /Users/xxx/Downloads/yyy/WhatsApp/WhatsApp Media/ALL
+Generator:
+-   module: WhatsAppGenerator
+    name: WhatsApp
+    result_path: /Users/xxx/Downloads/yyy/html/yyy.txt
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    send_recv_dict: {"me": "xxx",
+                      "yyy": "yyy",
+                      "yyy2": "yyy2"}
+    base_numbers: {"image_base_number": ["20210829", 1],
+                                             "video_base_number": ["20210829", 1],
+                                             "voice_base_number": ["20210829", 1]}
+-   module: HTMLGenerator
+    name: HTML
+    html_export_path: /Users/xxx/Downloads/yyy/html
+    html_name: HTMLPreview.html
+    attachment_dir: /Users/xxx/Downloads/yyy/html
+    result_dir: /Users/xxx/Downloads/yyy/html
+    send_recv_dict: { "me": "xxx",
+                      "yyy": "yyy",
+                      "yyy2": "yyy2" }
