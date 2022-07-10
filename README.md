@@ -63,7 +63,7 @@ sh -c 'ffmpeg -i "$1" "${1%.amr}.opus"' -- FILE
 | HTML      | `send_recv_dict` is the dict for mapping from different usernames.                                                                                                                           |
 
 4. Run `python3 main.py`
-5. For importing chat history into Telegram, please refer to this project.
+5. For importing chat history into Telegram, please refer to [this project](https://github.com/realdeveloperongithub/Telegram).
 ## FAQ
 1. Support for iOS  
 This project is actually manipulating WhatsApp exported files in the system level. That's why a rooted Android phone is a must. Sadly on iOS, we can't do that. In other words, the target chat (where to import the chat history) must be on Android platform.  
