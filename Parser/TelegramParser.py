@@ -36,6 +36,8 @@ class TelegramParser(object):
                 isfile(join(path, f)) and f.startswith("messages")]
 
     def convert_time(self, timestring: str) -> datetime:
+        if " UTC" in timestring:
+            timestring = timestring.split(" UTC")[0]
         datetime_object = datetime.strptime(timestring, '%d.%m.%Y %H:%M:%S')
         return datetime_object
 
