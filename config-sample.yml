@@ -54,10 +54,10 @@ Generator:
                                              "voice_base_number": ["20210829", 1]}
 -   module: HTMLGenerator
     name: HTML
-    html_export_path: /Users/xxx/Downloads/yyy/html
     html_name: HTMLPreview.html
-    attachment_dir: /Users/xxx/Downloads/yyy/html
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
     result_dir: /Users/xxx/Downloads/yyy/html
     send_recv_dict: { "me": "xxx",
                       "yyy": "yyy",
                       "yyy2": "yyy2" }
+print: True
