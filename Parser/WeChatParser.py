@@ -129,7 +129,10 @@ class WeChatParser(object):
     def convert_wechat_transfer(self, content: str) -> str:
         dom = minidom.parseString(content)
         fee_desc = dom.getElementsByTagName("feedesc")[0].firstChild.data
-        pay_memo = dom.getElementsByTagName("pay_memo")[0].firstChild.data
+        try:
+            pay_memo = dom.getElementsByTagName("pay_memo")[0].firstChild.data
+        except:
+            pay_memo = ""
         return f"WeChat Transfer:\nAmount: {fee_desc}\nNote: {pay_memo}"
 
     def convert_namecard(self, content: str) -> str:
