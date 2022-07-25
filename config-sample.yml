@@ -44,7 +44,7 @@ Parser:
 Generator:
 -   module: WhatsAppGenerator
     name: WhatsApp
-    result_path: /Users/xxx/Downloads/yyy/html/yyy.txt
+    result_path: /Users/xxx/Downloads/yyy/html/WhatsAppFull.txt
     attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
     send_recv_dict: {"me": "xxx",
                       "yyy": "yyy",
