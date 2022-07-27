@@ -81,7 +81,9 @@ The good news is, though, we are importing chat history to Telegram, so after im
 ### To-do
 
 1. Support for more apps
-- Google Chats (Hangouts)
+- Google Chats / Hangouts ([Google Takeout](https://takeout.google.com/))
+- Skype ([Export data](https://secure.skype.com/en/data-export))
+- Instagram ([Download Your Data](https://www.instagram.com/download/request/))
 
 ### Credit
 
