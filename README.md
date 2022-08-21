@@ -1,4 +1,5 @@
 ## Chat History Organizer
+This project, combined with our [modified Telegram](https://github.com/realdeveloperongithub/Telegram) can import all chat history into Telegram chat.
 ### How this project was born
 Originally, this project was to import chat history into Telegram, but now we can do more with it. In January 2021, Telegram [announced](https://telegram.org/blog/move-history) a new feature for people to bring their chat history – including videos and documents – to Telegram from apps like WhatsApp, Line and KakaoTalk.
 
