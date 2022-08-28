@@ -136,7 +136,10 @@ class TelegramParser(object):
                         msg_obj_list.append(description_msg_obj)
                 elif len(item.select("div.text")) > 0:
                     msg_obj.msg_type = 1
-                    msg_obj.content += item.select("div.text")[0].text.strip()
+                    delimiter = "@@@@@"
+                    for line_break in item.findAll('br'):
+                        line_break.replaceWith(delimiter)
+                    msg_obj.content += item.select("div.text")[0].text.strip().replace(delimiter, "\n")
                     msg_obj_list.append(msg_obj)
                 else:
                     msg_obj_list.append(msg_obj)
