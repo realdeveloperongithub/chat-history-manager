@@ -1,4 +1,5 @@
 import yaml
+import copy
 from Parser import LineParser, OnlineChatroomParser, KakaoTalkParser, MessengerParser, TelegramParser, WeChatParser, \
     WhatsAppParser
 from Generator import HTMLGenerator, WhatsAppGenerator
@@ -29,8 +30,9 @@ if __name__ == '__main__':
     for module in config["Generator"]:
         module_name = module["module"]
         print(module_name)
+        original_full_list = copy.deepcopy(full_list)
         try:
             obj = eval(f"{module_name}.{module_name}(**{module})")
-            obj.file_generator(full_list)
+            obj.file_generator(original_full_list)
         except Exception as e:
             print(repr(e))
