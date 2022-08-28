@@ -44,7 +44,7 @@ class KakaoTalkParser(object):
             for i in range(len(line_idx) - 1):
                 temp = ""
                 for sub_line in all_data[line_idx[i]:line_idx[i + 1]]:
-                    temp = temp + sub_line.strip() + "\n"
+                    temp = temp + sub_line.strip("\n") + "\n"
                 split_data.append(temp)
         return split_data
 
@@ -53,11 +53,11 @@ class KakaoTalkParser(object):
         datetime_object = datetime.strptime(timestring, '%B %d, %Y, %I:%M %p')
         return datetime_object
 
-    def convert_to_message(self, list: List[str]) -> List[Message]:
+    def convert_to_message(self, lines_list: List[str]) -> List[Message]:
         msg_list = []
         # file attached
         # opus jpg mp4 jpeg aac
-        for item in list:
+        for item in lines_list:
             if bool(re.search(r"^(January|February|March|April|May|June|"
                               r"July|August|September|October|November|December) "
                               r"\d{1,2}, (19|20)\d{2}, \d{1,2}:\d{1,2} [AP]M, ", item)):
@@ -68,7 +68,7 @@ class KakaoTalkParser(object):
                 result1 = pattern.findall(item)
                 time_string = "".join(list(result1[0]))
                 msg.time = self.convert_time(time_string)
-                item = item.lstrip(time_string + ", ")
+                item = item.replace(time_string + ", ", "")
                 msg.sender = item.split(" : ")[0]
                 msg.content = " : ".join(item.split(" : ")[1:]).rstrip("\n")
                 if bool(re.search(r"^([a-z0-9]{64}\.[a-z0-9]{3,4})$", msg.content)):
@@ -85,10 +85,10 @@ class KakaoTalkParser(object):
                             msg.msg_type = 5
                         msg.content = filename
                         copy2(os.path.join(self.res_dir, filename), os.path.join(self.attachment_dir, filename))
-                    else:
-                        msg.msg_type = 1
-                    if not (msg.sender.startswith("KakaoTalk Chats with ") or msg.sender.startswith("Date Saved : ")):
-                        msg_list.append(msg)
+                else:
+                    msg.msg_type = 1
+                if not (msg.sender.startswith("KakaoTalk Chats with ") or msg.sender.startswith("Date Saved : ")):
+                    msg_list.append(msg)
         return msg_list
 
     def msg_list_generator(self, **kwargs):
