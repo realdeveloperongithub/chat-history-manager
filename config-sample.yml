@@ -1,5 +1,5 @@
 Parser:
--   module: OnlineChatromParser
+-   module: OnlineChatroomParser
     name: Chatroom
     chat_log_file_path: /Users/xxx/Downloads/yyy/chatroom.txt
     username1: xxx
