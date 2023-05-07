@@ -5,7 +5,7 @@ from typing import List
 from bs4 import BeautifulSoup
 from Message import Message
 from os import listdir
-from os.path import isfile, join, split, basename, splitext
+#from os.path import isfile, join, split, basename, splitext
 from datetime import datetime
 from shutil import copy2
 import logging
@@ -32,8 +32,14 @@ class TelegramParser(object):
         self.attachment_dir = kwargs['attachment_dir']
 
     def list_message_html(self, path: str) -> List[str]:
-        return [join(path, f) for f in listdir(path) if
-                isfile(join(path, f)) and f.startswith("messages")]
+        file_regex = r"^messages(\d*|)\.html$"
+
+        file_list = [os.path.join(path, f) for f in os.listdir(path) if
+                     os.path.isfile(os.path.join(path, f)) and re.match(file_regex, f)]
+
+        return file_list
+        # return [join(path, f) for f in listdir(path) if
+        #         isfile(join(path, f)) and f.startswith("messages")]
 
     def convert_time(self, timestring: str) -> datetime:
         if " UTC" in timestring:
@@ -69,7 +75,7 @@ class TelegramParser(object):
                 if len(item.select("div.media_wrap.clearfix")) > 0:
                     if len(item.select("div.media_wrap.clearfix > a")) > 0:
                         href_text = item.select("div.media_wrap.clearfix > a")[0].get("href")
-                        parent_dir, filename = split(href_text)
+                        parent_dir, filename = os.path.split(href_text)
                         # print(filename)
                         if parent_dir == "video_files":
                             msg_obj.msg_type = 2
@@ -106,13 +112,13 @@ class TelegramParser(object):
                         #     copy2(join(self.path, parent_dir, filename), join(self.attachment_dir, filename))
                         #     msg_obj.content = filename
                         if msg_obj.msg_type != 6 and msg_obj.msg_type != -1:
-                            if not isfile(join(chat_log_dir, parent_dir, filename)):
-                                filenames = os.listdir(join(chat_log_dir, parent_dir))
+                            if not os.path.isfile(os.path.join(chat_log_dir, parent_dir, filename)):
+                                filenames = os.listdir(os.path.join(chat_log_dir, parent_dir))
                                 for file_name_string in filenames:
-                                    if file_name_string.startswith(splitext(basename(filename))[0] + " "):
+                                    if file_name_string.startswith(os.path.splitext(os.path.basename(filename))[0] + " "):
                                         filename = file_name_string
                                         break
-                            copy2(join(chat_log_dir, parent_dir, filename), join(self.attachment_dir, filename))
+                            copy2(os.path.join(chat_log_dir, parent_dir, filename), os.path.join(self.attachment_dir, filename))
                             msg_obj.content = filename
 
                     # if len(item.select("div.media_wrap.clearfix > div > div.body > div.title.bold")) > 0:
