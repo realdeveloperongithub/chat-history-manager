@@ -1,5 +1,5 @@
 ## Chat History Organizer
-This project, combined with our [modified Telegram](https://github.com/realdeveloperongithub/Telegram) can import all chat history into Telegram chat.
+This project, combined with a [modified Telegram](https://github.com/realdeveloperongithub/Telegram) can import all kinds of chat history into Telegram chat.
 ### How this project was born
 Originally, this project was to import chat history into Telegram, but now we can do more with it. In January 2021, Telegram [announced](https://telegram.org/blog/move-history) a new feature for people to bring their chat history – including videos and documents – to Telegram from apps like WhatsApp, Line and KakaoTalk.
 
@@ -46,7 +46,7 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 | Line       | Y           | Chatroom - Other settings - Export chat history.<br />A local database at `/data/data/jp.naver.line.android/databases/naver_line`<br />Resources file at `/storage/emulated/0/Android/data/jp.naver.line.android/files/chats`.                                                                                                |
 | Messenger  | N           | [Download Your Information](https://www.facebook.com/dyi)                                                                                                                                                                                                                                                                     |
 | Telegram   | N           | Chatroom - Export chat history (using HTML format)                                                                                                                                                                                                                                                                            |
-| WeChat     | Y           | A decrypted WeChat database (EnMicroMsg.db) and all the resources files.</br>All voice messages need to be converted to opus format (you can refer to [silk2mp3](https://github.com/Coldison/silk2mp3) and then convert mp3 to opus).<br/>Please refer to the [wechat-dump](https://github.com/ppwwyyxx/wechat-dump) project. |
+| WeChat     | Y           | A decrypted WeChat database (EnMicroMsg.db) and all the resources files.</br>All the voice files need to be converted to opus format (you can refer to [silk2mp3](https://github.com/Coldison/silk2mp3) and then convert mp3 to opus).<br/>Please refer to the [wechat-dump](https://github.com/ppwwyyxx/wechat-dump) project. |
 | WhatsApp   | Y [^1]      | Chatroom - More - Export chat</br>All files under `/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media` need to be collected and put into one folder.                                                                                                                                                               |
 
 [^1]: Root is not needed if there's not much media in the WhatsApp chat. In that case, share to local storage with a file manager (for example [Solid Explorer](https://play.google.com/store/apps/details?id=pl.solidexplorer2)) will do.
