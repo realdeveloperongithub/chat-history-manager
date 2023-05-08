@@ -50,7 +50,7 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 | WhatsApp   | Y [^1]      | Chatroom - More - Export chat</br>All files under `/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media` need to be collected and put into one folder.                                                                                                                                                               |
 
 [^1]: Root is not needed if there's not much media in the WhatsApp chat. In that case, share to local storage with a file manager (for example [Solid Explorer](https://play.google.com/store/apps/details?id=pl.solidexplorer2)) will do.
-7. All the voice message files, need to be converted to .opus format. Code snippet for converting all amr files in one folder.
+7. All the voice message files need to be converted to .opus format. Here's a code snippet for converting all amr files in one folder.
 ```shell
 find /folder/to/amr/files -name '*.amr' -print0 | \
 xargs -0 -I FILE \
