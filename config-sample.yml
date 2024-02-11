@@ -59,7 +59,7 @@ Generator:
     name: HTML
     html_export_path: /Users/xxx/Downloads/yyy/html
     html_name: HTMLPreview.html
-    attachment_dir: /Users/xxx/Downloads/yyy/html
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
     result_dir: /Users/xxx/Downloads/yyy/html
     send_recv_dict: { "me": "xxx",
                       "yyy": "yyy",
