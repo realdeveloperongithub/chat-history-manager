@@ -21,15 +21,18 @@ Parser:
     res_dir: Users/xxx/Downloads/line/chats
     attachment_dir: /Users/xxx/Downloads/line/attachment
     chat_log_file_path: /Users/xxx/Downloads/line/Chat history with yyy.txt
--   module: MessengerParser
+-   module: MetaParser
     name: Messenger
-    chat_log_file_path: /Users/xxx/Downloads/yyy/facebook-xxx/messages/inbox/yyy/message_1.html
+    chat_log_file_path: /Users/xxx/Downloads/yyy/facebook-xxx/messages/inbox/yyy/message_1.json
     res_dir: /Users/xxx/Downloads/yyy/facebook-xxx
-    attachment_dir: /Users/xxx/Downloads/yyy
+    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    timezone: 12
 -   module: TelegramParser
     name: Telegram
-    chat_log_dir: /Users/xxx/Downloads/yyy/ChatExport_2022-06-05
+    chat_log_file_path: /Users/xxx/Downloads/yyy/ChatExport_2022-06-05/result.json
+    res_dir: /Users/xxx/Downloads/yyy/ChatExport_2022-06-05/
     attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    timezone: 12
 -   module: WeChatParser
     name: WeChat
     attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
@@ -54,8 +57,9 @@ Generator:
                                              "voice_base_number": ["20210829", 1]}
 -   module: HTMLGenerator
     name: HTML
+    html_export_path: /Users/xxx/Downloads/yyy/html
     html_name: HTMLPreview.html
-    attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
+    attachment_dir: /Users/xxx/Downloads/yyy/html
     result_dir: /Users/xxx/Downloads/yyy/html
     send_recv_dict: { "me": "xxx",
                       "yyy": "yyy",

@@ -82,6 +82,7 @@ class HTMLGenerator(object):
             f.writelines(self.css)
         with open(os.path.join(self.result_dir, self.html_name), "w", encoding="utf-8") as f:
             f.writelines(converted_data)
+        print("")
 
 
 if __name__ == '__main__':
