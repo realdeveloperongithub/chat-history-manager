@@ -11,7 +11,7 @@ Images and videos import is only available when you import chat history from Wha
 2. 100 messages limitation  
 If the target chat (where you import messages to) has fewer than 100 messages, Telegram will mix the existing messages in a Telegram chat with the imported messages in one unified timeline. However I believe most people have more than 100 messages in the chat.
 3. Support for more apps  
-Currently only three apps (Line, Kakao Talk, WhatsApp) are supported. We need more apps to be supported.
+Currently only three apps (Line, Kakao Talk, WhatsApp) are supported officially by Telegram.
 
 ### What does this project do
 
