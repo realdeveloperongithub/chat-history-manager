@@ -1,4 +1,5 @@
-## Chat History Organizer
+## Chat History Manager
+An extensible chat history manager. This project, combined with a [modified Telegram](https://github.com/realdeveloperongithub/Telegram) can import all kinds of chat history into Telegram chat.
 ### How this project was born
 Originally, this project was to import chat history into Telegram, but now we can do more with it. In January 2021, Telegram [announced](https://telegram.org/blog/move-history) a new feature for people to bring their chat history – including videos and documents – to Telegram from apps like WhatsApp, Line and KakaoTalk.
 
@@ -9,8 +10,8 @@ The API has been published, but for me, it is not easy to manipulate it. And the
 Images and videos import is only available when you import chat history from WhatsApp. When you import from Line or Kakao Talk, all the multimedia files will be ignored.
 2. 100 messages limitation  
 If the target chat (where you import messages to) has fewer than 100 messages, Telegram will mix the existing messages in a Telegram chat with the imported messages in one unified timeline. However I believe most people have more than 100 messages in the chat.
-3. (Of course) Support for more apps  
-Currently only three apps (Line, Kakao Talk, WhatsApp) are supported. We need more apps to be supported.
+3. Support for more apps  
+Currently only three apps (Line, Kakao Talk, WhatsApp) are supported officially by Telegram.
 
 ### What does this project do
 
@@ -27,6 +28,7 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 - Line
 - Kakao Talk
 - Messenger
+- Instagram
 - WeChat
 - WhatsApp
 - Telegram
@@ -43,13 +45,14 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 |------------|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Kakao Talk | ❌           | Chatroom Settings - Export Messages                                                                                                                                                                                                                                                                                           |
 | Line       | ✅           | Chatroom - Other settings - Export chat history.<br />A local database at `/data/data/jp.naver.line.android/databases/naver_line`<br />Resources file at `/storage/emulated/0/Android/data/jp.naver.line.android/files/chats`.                                                                                                |
-| Messenger  | ❌           | [Download Your Information](https://www.facebook.com/dyi)                                                                                                                                                                                                                                                                     |
-| Telegram   | ❌           | Chatroom - Export chat history (using HTML format)                                                                                                                                                                                                                                                                            |
-| WeChat     | ✅           | A decrypted WeChat database (EnMicroMsg.db) and all the resources files.</br>All voice messages need to be converted to opus format (you can refer to [silk2mp3](https://github.com/Coldison/silk2mp3) and then convert mp3 to opus).<br/>Please refer to the [wechat-dump](https://github.com/ppwwyyxx/wechat-dump) project. |
+| Messenger  | ❌           | [Download Your Information](https://www.facebook.com/dyi) (JSON format)                                                                                                                                                                                                                                                                     |
+| Instagram  | ❌           | [Download Your Information](https://accountscenter.instagram.com/info_and_permissions/dyi/) (JSON format)                                                                                                                                                                                                                                                                     |
+| Telegram   | ❌           | Chatroom - Export chat history (JSON format)                                                                                                                                                                                                                                                                            |
+| WeChat     | ✅           | A decrypted WeChat database (EnMicroMsg.db) and all the resources files.</br>All the voice files need to be converted to opus format (you can refer to [silk2mp3](https://github.com/Coldison/silk2mp3) and then convert mp3 to opus).<br/>Please refer to the [wechat-dump](https://github.com/ppwwyyxx/wechat-dump) project. |
 | WhatsApp   | ✅ [^1]      | Chatroom - More - Export chat</br>All files under `/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media` need to be collected and put into one folder.                                                                                                                                                               |
 
 [^1]: Root is not needed if there's not much media in the WhatsApp chat. In that case, share to local storage with a file manager (for example [Solid Explorer](https://play.google.com/store/apps/details?id=pl.solidexplorer2)) will do.
-7. All the voice message files, need to be converted to .opus format. Code snippet for converting all amr files in one folder.
+7. All the voice message files need to be converted to .opus format. Here's a code snippet for converting all amr files in one folder.
 ```shell
 find /folder/to/amr/files -name '*.amr' -print0 | \
 xargs -0 -I FILE \
@@ -81,7 +84,8 @@ The good news is, though, we are importing chat history to Telegram, so after im
 ### To-do
 
 1. Support for more apps
-- Google Chats (Hangouts)
+- Google Chats / Hangouts ([Google Takeout](https://takeout.google.com/))
+- Skype ([Export data](https://secure.skype.com/en/data-export))
 
 ### Credit
 
