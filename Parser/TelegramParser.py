@@ -33,12 +33,20 @@ class TelegramParser(object):
         #self.res_dir = res_dir
         #self.timezone = timezone
 
+    # def timestamp_to_local_datetime(self, timestamp: int, tz_offset: float) -> datetime:
+    #     utc_time = datetime.utcfromtimestamp(timestamp)
+    #     offset = timedelta(hours=tz_offset)
+    #     tz = timezone(offset)
+    #     local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
+    #     return local_time
+
     def timestamp_to_local_datetime(self, timestamp: int, tz_offset: float) -> datetime:
         utc_time = datetime.utcfromtimestamp(timestamp)
         offset = timedelta(hours=tz_offset)
         tz = timezone(offset)
-        local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
-        return local_time
+        local_time_aware = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
+        local_time_naive = local_time_aware.replace(tzinfo=None)
+        return local_time_naive
 
     def ogg_to_opus(self, content: str) -> str:
         return content.replace(".ogg", ".opus")
@@ -61,12 +69,29 @@ class TelegramParser(object):
                 msg_obj.content = f"{msg['actor']}: {msg['action']}"
             elif msg['type'] == "message":
                 msg_obj.sender = msg['from']
-                if "file" in msg:
-                    if "photo" in msg:
-                        # image
-                        msg_obj.msg_type = 3
-                        msg_obj = self.media_processor(msg_obj, msg['photo'], res_dir)
-                    elif ("media_type" in msg and msg["media_type"] == "video_file") or ("mime_type" in msg and msg["mime_type"].startswith("video")) or "file" in msg and msg["file"].endswith(".mp4"):
+                if "self_destruct_period_seconds" in msg:
+                    # self-destruct video/photo
+                    msg_obj.msg_type = 1
+                    content_str = f"Self-destruct: {msg['self_destruct_period_seconds']} seconds"
+                    if "text" in msg and msg["text"] != "":
+                        content_str += "\n" + msg["text"]
+                    msg_obj.content = content_str
+                    msg_obj_list.append(msg_obj)
+                elif "photo" in msg:
+                    # image
+                    msg_obj.msg_type = 3
+                    msg_obj = self.media_processor(msg_obj, msg['photo'], res_dir)
+                    msg_obj_list.append(msg_obj)
+                    # caption
+                    if "text" in msg and msg["text"] != "":
+                        msg_obj_caption = Message()
+                        msg_obj_caption.msg_type = 1
+                        msg_obj_caption.sender = msg_obj.sender
+                        msg_obj_caption.time = msg_obj.time
+                        msg_obj_caption.content = msg["text"]
+                        msg_obj_list.append(msg_obj_caption)
+                elif "file" in msg:
+                    if ("media_type" in msg and msg["media_type"] == "video_file") or ("mime_type" in msg and msg["mime_type"].startswith("video")) or "file" in msg and msg["file"].endswith(".mp4"):
                         # video
                         msg_obj.msg_type = 2
                         msg_obj = self.media_processor(msg_obj, msg['file'], res_dir)
@@ -78,6 +103,18 @@ class TelegramParser(object):
                         # file
                         msg_obj.msg_type = 5
                         msg_obj = self.media_processor(msg_obj, msg['file'], res_dir)
+                    else:
+                        logger.error("Unknown message type at " + str(msg['date_unixtime']))
+                        continue
+                    msg_obj_list.append(msg_obj)
+                    # caption
+                    if "text" in msg and msg["text"] != "":
+                        msg_obj_caption = Message()
+                        msg_obj_caption.msg_type = 1
+                        msg_obj_caption.sender = msg_obj.sender
+                        msg_obj_caption.time = msg_obj.time
+                        msg_obj_caption.content = msg["text"]
+                        msg_obj_list.append(msg_obj_caption)
                 elif "text" in msg:
                     msg_obj.msg_type = 1
                     if isinstance(msg["text"], list):
@@ -91,6 +128,7 @@ class TelegramParser(object):
                     elif msg["text"] != "":
                         # text
                         msg_obj.content = msg["text"]
+                    msg_obj_list.append(msg_obj)
                 else:
                     logger.error("Unknown message type at " + str(msg['date_unixtime']))
                     continue
@@ -99,7 +137,7 @@ class TelegramParser(object):
             #     filename = split(filepath)[1]
             #     copy2(join(res_dir, filepath), join(self.attachment_dir, filename))
             #     msg_obj.content = filename
-            msg_obj_list.append(msg_obj)
+            # msg_obj_list.append(msg_obj)
         #msg_obj_list.reverse()
         return msg_obj_list
 
