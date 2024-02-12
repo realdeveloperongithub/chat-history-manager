@@ -2,7 +2,7 @@ import copy
 
 import yaml
 from Parser import LineParser, OnlineChatroomParser, KakaoTalkParser, MetaParser, TelegramParser, WeChatParser, \
-    WhatsAppParser
+    WhatsAppParser, GoogleChatParser
 from Generator import HTMLGenerator, WhatsAppGenerator
 from util.MessageListMerger import MessageListMerger
 
