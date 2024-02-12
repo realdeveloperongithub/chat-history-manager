@@ -44,6 +44,12 @@ Parser:
     chat_log_file_path: /Users/xxx/Downloads/yyy/WhatsApp/WhatsApp Chat with yyy/WhatsApp Chat with yyy.txt
     attachment_dir: /Users/xxx/Downloads/yyy/MediaStorage
     res_dir: /Users/xxx/Downloads/yyy/WhatsApp/WhatsApp Media/ALL
+-   module: GoogleChatParser
+    name: Google Chat
+    chat_log_file_path: /Users/xxx/Downloads/Chat History/Takeout/Google Chat/Groups/DM _yyy/messages.json
+    res_dir: /Users/xxx/Downloads/Chat History/Takeout/Google Chat/Groups/DM _yyy/
+    attachment_dir: /Users/xxx/Downloads/Chat History/yyy/MediaStorage
+    timezone: 12
 Generator:
 -   module: WhatsAppGenerator
     name: WhatsApp
