@@ -34,14 +34,22 @@ class MetaParser(object):
         #self.res_dir = res_dir
         #self.timezone = timezone
 
-
+    # def timestamp_ms_to_local_datetime(self, timestamp: int, tz_offset: float) -> datetime:
+    #     seconds = timestamp / 1000
+    #     utc_time = datetime.utcfromtimestamp(seconds)
+    #     offset = timedelta(hours=tz_offset)
+    #     tz = timezone(offset)
+    #     local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
+    #     return local_time
+    
     def timestamp_ms_to_local_datetime(self, timestamp: int, tz_offset: float) -> datetime:
         seconds = timestamp / 1000
         utc_time = datetime.utcfromtimestamp(seconds)
         offset = timedelta(hours=tz_offset)
         tz = timezone(offset)
-        local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
-        return local_time
+        local_time_aware = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
+        local_time_naive = local_time_aware.replace(tzinfo=None)
+        return local_time_naive
 
     def ogg_to_opus(self, content: str) -> str:
         return content.replace(".ogg", ".opus")
