@@ -116,7 +116,7 @@ if __name__ == '__main__':
     chat_log_file_path = r"/Users/xxx/Downloads/Chat History/Takeout/Google Chat/Groups/DM _yyy/messages.json"
     res_dir = r"/Users/xxx/Downloads/Chat History/Takeout/Google Chat/Groups/DM _yyy/"
     attachment_dir = r"/Users/xxx/Downloads/Chat History/yyy/MediaStorage"
-    mp = GoogleChatParser(attachment_dir=attachment_dir)
-    full_msg_list = mp.msg_list_generator(chat_log_file_path=chat_log_file_path, res_dir=res_dir, timezone=8)
+    gcp = GoogleChatParser(attachment_dir=attachment_dir)
+    full_msg_list = gcp.msg_list_generator(chat_log_file_path=chat_log_file_path, res_dir=res_dir, timezone=12)
     for full_msg in full_msg_list:
         print(str(full_msg) + "\n")
