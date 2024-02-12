@@ -41,7 +41,7 @@ class MetaParser(object):
     #     tz = timezone(offset)
     #     local_time = utc_time.replace(tzinfo=timezone.utc).astimezone(tz)
     #     return local_time
-    
+
     def timestamp_ms_to_local_datetime(self, timestamp: int, tz_offset: float) -> datetime:
         seconds = timestamp / 1000
         utc_time = datetime.utcfromtimestamp(seconds)
@@ -73,24 +73,28 @@ class MetaParser(object):
                 msg_obj.msg_type = 3
                 for photo in msg['photos']:
                     msg_obj_list.append(self.media_processor(msg_obj, photo['uri'], res_dir))
+                msg_obj_list.append(msg_obj)
             elif 'videos' in msg:
                 msg_obj.msg_type = 2
                 for video in msg['videos']:
                     msg_obj_list.append(self.media_processor(msg_obj, video['uri'], res_dir))
+                msg_obj_list.append(msg_obj)
             elif 'audio_files' in msg:
                 msg_obj.msg_type = 4
                 for audio_file in msg['audio_files']:
                     msg_obj_list.append(self.media_processor(msg_obj, audio_file['uri'], res_dir))
+                msg_obj_list.append(msg_obj)
             elif 'share' in msg:
                 msg_obj.msg_type = 1
                 if ('link' not in msg['share']) and ('share_text' in msg['share']):
                     msg_obj.content = msg['share']['share_text'].encode('latin1').decode('utf8')
                 else:
                     msg_obj.content = msg['share']['link']
+                msg_obj_list.append(msg_obj)
             elif 'content' in msg:
                 msg_obj.msg_type = 1
                 msg_obj.content = msg['content'].encode('latin1').decode('utf8')
-                # msg_obj_list.append(msg_obj)
+                msg_obj_list.append(msg_obj)
             else:
                 logger.error("Unknown message type at " + str(msg['timestamp_ms']))
                 continue
@@ -98,7 +102,7 @@ class MetaParser(object):
             #     filename = split(filepath)[1]
             #     copy2(join(res_dir, filepath), join(self.attachment_dir, filename))
             #     msg_obj.content = filename
-            msg_obj_list.append(msg_obj)
+            # msg_obj_list.append(msg_obj)
         msg_obj_list.reverse()
         return msg_obj_list
 
