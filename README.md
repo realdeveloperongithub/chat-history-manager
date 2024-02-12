@@ -32,6 +32,7 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 - WeChat
 - WhatsApp
 - Telegram
+- Google Chat / Hangouts
 
 ### Prerequisites
 
@@ -47,6 +48,7 @@ If you convert all chat history to WhatsApp format, you will be able to import a
 | Line       | Y           | Chatroom - Other settings - Export chat history.<br />A local database at `/data/data/jp.naver.line.android/databases/naver_line`<br />Resources file at `/storage/emulated/0/Android/data/jp.naver.line.android/files/chats`.                                                                                                |
 | Messenger  | N           | [Download Your Information](https://www.facebook.com/dyi) (JSON format)                                                                                                                                                                                                                                                                     |
 | Instagram  | N           | [Download Your Information](https://accountscenter.instagram.com/info_and_permissions/dyi/) (JSON format)                                                                                                                                                                                                                                                                     |
+| Google Chat / Hangouts| N           | [Google Takeout](https://takeout.google.com/)                                                                                                                                                                                                                                                                   |
 | Telegram   | N           | Chatroom - Export chat history (JSON format)                                                                                                                                                                                                                                                                            |
 | WeChat     | Y           | A decrypted WeChat database (EnMicroMsg.db) and all the resources files.</br>All the voice files need to be converted to opus format (you can refer to [silk2mp3](https://github.com/Coldison/silk2mp3) and then convert mp3 to opus).<br/>Please refer to the [wechat-dump](https://github.com/ppwwyyxx/wechat-dump) project. |
 | WhatsApp   | Y [^1]      | Chatroom - More - Export chat</br>All files under `/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media` need to be collected and put into one folder.                                                                                                                                                               |
@@ -84,7 +86,6 @@ The good news is, though, we are importing chat history to Telegram, so after im
 ### To-do
 
 1. Support for more apps
-- Google Chats / Hangouts ([Google Takeout](https://takeout.google.com/))
 - Skype ([Export data](https://secure.skype.com/en/data-export))
 
 ### Credit
