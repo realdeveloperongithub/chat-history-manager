@@ -1,6 +1,5 @@
 # coding = utf-8
-from typing import Tuple, List
-
+from typing import Tuple, List, Dict, Any
 from Message import Message
 import os
 from datetime import datetime
@@ -21,7 +20,7 @@ class WeChatParser(object):
     for VIDEO, IMAGE and VOICE type, the content should only be the filename
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, db_path: str, res_dir: str, attachment_dir: str):
         """
         WeChat Parser for WeChat Chat History
         :param db_path: path to the decrypted version of EnMicroMsg.db
@@ -29,9 +28,6 @@ class WeChatParser(object):
         :param attachment_dir: where to save all the multimedia files
         """
         super(WeChatParser, self).__init__()
-        db_path = kwargs['db_path']
-        res_dir = kwargs['res_dir']
-        attachment_dir = kwargs['attachment_dir']
         self.res_dir = res_dir
         self.attachment_dir = attachment_dir
         self.voice_dir = os.path.join(res_dir, "voice2")
@@ -42,52 +38,41 @@ class WeChatParser(object):
 
     def convert_time(self, timestring: str) -> datetime:
         timestring = timestring.split(".")[0]
-        datetime_object = datetime.strptime(timestring, '%Y-%m-%d %H:%M:%S')
-        return datetime_object
+        return datetime.strptime(timestring, '%Y-%m-%d %H:%M:%S')
 
     def convert_image(self, content: str) -> str:
-        # content = "<msg><img aeskey="null" encryver="null" cdnthumbaeskey="null" cdnthumburl="null" cdnthumblength="10240" cdnthumbheight="0" cdnthumbwidth="0" cdnmidheight="0" cdnmidwidth="0" cdnhdheight="0" cdnhdwidth="0" cdnmidimgurl="null" length="51152" md5="null" /></msg>|img:THUMBNAIL_DIRPATH://th_65e520a2f"
         image_key = "THUMBNAIL_DIRPATH://" + str(content.split("|img:THUMBNAIL_DIRPATH://")[1])
         result = self._get_img_file(image_key)
-        # (file attached)
-        if result != "":
+        if result:
             parent_dir, filename = os.path.split(result)
             filename = filename + ".jpg"
             copy2(result, os.path.join(self.attachment_dir, filename))
             return filename
         else:
-            return "Image message {}".format(image_key)
+            return f"Image message {image_key}"
 
     def convert_voice(self, content: str) -> str:
-        # content = "wxid_uf4:8560:1|img:1022d5d103"
         voice_path = str(content.split("|img:")[1])
         result = self._get_voice_file(voice_path)
-        # (file attached)
-        if result != "":
+        if result:
             parent_dir, filename = os.path.split(result)
-            # patch 0829
-            # todo
-            # filename = filename.replace(".mp3", "") + ".opus"
             copy2(result, os.path.join(self.attachment_dir, filename))
             return filename
         else:
-            return "Voice message {}".format(voice_path)
+            return f"Voice message {voice_path}"
 
     def convert_video(self, content: str) -> Tuple[str, str]:
-        # content = "WeChat VIDEO|img:2154391783b89489105"
         video_path = content.strip("WeChat VIDEO|img:")
         video_path = video_path.strip("VIDEO FILE|img:")
         result, filetype = self._get_video_file(video_path)
-        if result != "":
+        if result:
             parent_dir, filename = os.path.split(result)
             copy2(result, os.path.join(self.attachment_dir, filename))
             return filename, filetype
         else:
-            return "Video message {}".format(video_path), "EMPTY"
+            return f"Video message {video_path}", "EMPTY"
 
     def convert_url_or_file(self, content: str) -> Tuple[str, int]:
-        # content = "URL:http://www.google.com&type=comment|img:THUMBNAIL_DIRPATH://th_b164d5766"
-        # content = "FILE:questionnaire.docx"
         if content.startswith("FILE:"):
             filename = content.strip("FILE:")
             if os.path.isfile(os.path.join(self.res_dir, filename)):
@@ -95,14 +80,12 @@ class WeChatParser(object):
             return filename, 5
         else:
             content = content.strip("URL:")
-            if content.find("|img:THUMBNAIL_DIRPATH:") != -1:
+            if "|img:THUMBNAIL_DIRPATH:" in content:
                 content = content.split("|img:THUMBNAIL_DIRPATH:")[0]
             return content, 1
 
     def convert_youtube_url(self, content: str) -> str:
-        # content = "https://youtu.be/rc null"
-        content = content.strip(" null")
-        return content
+        return content.strip(" null")
 
     def convert_live_location(self, content: str) -> str:
         return "live location shared"
@@ -114,7 +97,6 @@ class WeChatParser(object):
         return f"{quoted_text}\n================\n{reply_text}"
 
     def convert_location(self, content: str) -> str:
-        # content = LOCATION:New York (45.189418,141.438920)
         return content
 
     def convert_video_chat(self, content: str) -> str:
@@ -131,74 +113,51 @@ class WeChatParser(object):
         fee_desc = dom.getElementsByTagName("feedesc")[0].firstChild.data
         try:
             pay_memo = dom.getElementsByTagName("pay_memo")[0].firstChild.data
-        except:
+        except IndexError:
             pay_memo = ""
         return f"WeChat Transfer:\nAmount: {fee_desc}\nNote: {pay_memo}"
 
     def convert_namecard(self, content: str) -> str:
-        # content = NAMECARD: <msg username="gh_e4" nickname="Test" alias="test" fullpy="test" shortpy="test" imagestatus="3" scene="17" province="Guangdong" city="Guangzhou" sign="test" percard="0" sex="0" certflag="24" certinfo="test" certinfoext="" brandIconUrl="http://mmsns.qpic.cn/0" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="" regionCode="CN_Guangdong_Guangzhou"/>
         content = content.strip("NAMECARD: ")
         dom = minidom.parseString(content)
         nickname = dom.getElementsByTagName("msg")[0].getAttribute("nickname")
         return f"Namecard: {nickname}"
 
-    def sql_query_img(self, key: str, cc: sqlite3.Cursor) -> str:
-        query = cc.execute(
-            """ SELECT bigImgPath FROM ImgInfo2 WHERE thumbImgPath = '{}'""".format(key))
-        bigImg = ""
-        for row in query:
-            bigImg = row[0]
-        if bigImg.startswith("SERVERID://"):
-            bigImg = ""
-        return bigImg
+    def sql_query_img(self, key: str) -> str:
+        query = self.cc.execute("SELECT bigImgPath FROM ImgInfo2 WHERE thumbImgPath = ?", (key,))
+        bigImg = query.fetchone()
+        if bigImg and bigImg[0].startswith("SERVERID://"):
+            return ""
+        return bigImg[0] if bigImg else ""
 
     def _get_voice_file(self, imgpath: str) -> str:
         fname = hashlib.md5(imgpath.encode("ascii")).hexdigest()
         dir1, dir2 = fname[:2], fname[2:4]
-        ret = os.path.join(self.voice_dir, dir1, dir2,
-                           'msg_{}.opus'.format(imgpath))
+        ret = os.path.join(self.voice_dir, dir1, dir2, 'msg_{}.opus'.format(imgpath))
         if not os.path.isfile(ret):
             logger.error(f"Cannot find voice file for {imgpath}, with filename {fname}")
             return ""
         return ret
 
     def _get_img_file(self, fname: str) -> str:
-        bigImg = self.sql_query_img(fname, self.cc)
+        bigImg = self.sql_query_img(fname)
         if bigImg:
-            # logger.info("Big image in database for {}".format(fname))
             dir1, dir2 = bigImg[:2], bigImg[2:4]
             dirname = os.path.join(self.img_dir, dir1, dir2)
-            if not os.path.isdir(dirname):
-                logger.warning("Directory not found: {}".format(dirname))
-            else:
+            if os.path.isdir(dirname):
                 full_name = os.path.join(dirname, bigImg)
-                if os.path.isfile(full_name):
-                    size = os.path.getsize(full_name)
-                    if size > 0:
-                        return full_name
-        # logger.info("Big image in database for {}".format(fname))
-        # fname = fname.replace("THUMBNAIL_DIRPATH://th_", "")
-        # dir1, dir2 = fname[:2], fname[2:4]
+                if os.path.isfile(full_name) and os.path.getsize(full_name) > 0:
+                    return full_name
         fname = fname.replace("THUMBNAIL_DIRPATH://", "")
         dir1, dir2 = fname[3:5], fname[5:7]
         dirname = os.path.join(self.img_dir, dir1, dir2)
-        if not os.path.isdir(dirname):
-            logger.warning("Directory not found: {}".format(dirname))
-            return ""
-        else:
-            full_name = os.path.join(dirname, fname)
-            if os.path.isfile(full_name):
-                size = os.path.getsize(full_name)
-                if size > 0:
-                    return full_name
-                else:
-                    logger.warning("Image file not valid: {}".format(full_name))
-                    return ""
-            else:
-                logger.warning("Image file not found: {}".format(full_name))
-                return ""
+        full_name = os.path.join(dirname, fname)
+        if os.path.isfile(full_name) and os.path.getsize(full_name) > 0:
+            return full_name
+        logger.warning(f"Image file not found or not valid: {full_name}")
+        return ""
 
-    def _get_video_file(self, videoid):
+    def _get_video_file(self, videoid: str) -> Tuple[str, str]:
         video_file = os.path.join(self.video_dir, videoid + ".mp4")
         video_thumbnail_file = os.path.join(self.video_dir, videoid + ".jpg")
         if os.path.exists(video_file):
@@ -208,129 +167,75 @@ class WeChatParser(object):
         logger.warning(f"Cannot find video {videoid}")
         return "", ""
 
-    def convert_msg(self, msg_str):
+    def convert_msg(self, msg_str: str) -> Message:
         msg = Message()
-        wechat_msg_type = int(msg_str.split("|")[0])
-        sender = msg_str.split("|")[1].split(":")[0]
+        msg_type, sender_info, *content_parts = msg_str.split("|")
+        sender = sender_info.split(":")[0]
         msg.sender = sender
-        time = ":".join(msg_str.split("|")[1].split(":")[1:4])
-        time = self.convert_time(time)
-        msg.time = time
-        content = (":".join("|".join(msg_str.split("|")[1:]).split(":")[4:])).strip("\n")
+        time_str = ":".join(sender_info.split(":")[1:4])
+        msg.time = self.convert_time(time_str)
+        content = ":".join(content_parts).strip("\n")
 
-        if wechat_msg_type == 1:
-            # text
-            msg.msg_type = 1
-        elif wechat_msg_type == 822083633:
-            # quoted text
-            msg.msg_type = 1
-            content = self.convert_quote(content)
-        elif wechat_msg_type == 34:
-            # audio
-            msg.msg_type = 4
-            content = self.convert_voice(content)
-        elif wechat_msg_type == 3:
-            # image
-            msg.msg_type = 3
-            content = self.convert_image(content)
-        elif wechat_msg_type == 62 or wechat_msg_type == 43:
-            # video
-            content, filetype = self.convert_video(content)
-            if filetype == "THUMB":
-                msg.msg_type = 3
-            else:
-                msg.msg_type = 2
-        elif wechat_msg_type == 49:
-            # url or file
-            content, msg.msg_type = self.convert_url_or_file(content)
-        elif wechat_msg_type == 16777265:
-            # url
-            msg.msg_type = 1
-            content = self.convert_youtube_url(content)
-        elif wechat_msg_type == -1879048186:
-            # share live location
-            msg.msg_type = 6
-            content = self.convert_live_location(content)
-        elif wechat_msg_type == 47:
-            # sticker
-            msg.msg_type = 1
-            content = self.convert_sticker(content)
-        elif wechat_msg_type == 48:
-            # share location
-            msg.msg_type = 6
-            content = self.convert_location(content)
-        elif wechat_msg_type == 1048625:
-            # cloud video
-            msg.msg_type = 6
-            content = self.convert_cloud_video(content)
-        elif wechat_msg_type == 50:
-            # video chat
-            msg.msg_type = 6
-            content = self.convert_video_chat(content)
-        elif wechat_msg_type == 419430449:
-            # wechat transfer
-            msg.msg_type = 6
-            content = self.convert_wechat_transfer(content)
-        elif wechat_msg_type == 42:
-            # namecard
-            msg.msg_type = 6
-            content = self.convert_namecard(content)
-        else:
-            # unknown msg type
+        msg_type = int(msg_type)
+        conversion_map = {
+            1: (self.convert_text, 1),
+            822083633: (self.convert_quote, 1),
+            34: (self.convert_voice, 4),
+            3: (self.convert_image, 3),
+            62: (self.convert_video, 2),
+            43: (self.convert_video, 2),
+            49: (self.convert_url_or_file, None),
+            16777265: (self.convert_youtube_url, 1),
+            -1879048186: (self.convert_live_location, 6),
+            47: (self.convert_sticker, 1),
+            48: (self.convert_location, 6),
+            1048625: (self.convert_cloud_video, 6),
+            50: (self.convert_video_chat, 6),
+            419430449: (self.convert_wechat_transfer, 6),
+            42: (self.convert_namecard, 6)
+        }
+
+        try:
+            converter, default_type = conversion_map.get(msg_type, (self.convert_unknown, -1))
+            converted_content = converter(content)
+            msg.msg_type = default_type if default_type is not None else converted_content[1]
+            msg.content = converted_content[0] if isinstance(converted_content, tuple) else converted_content
+        except Exception as e:
+            logger.warning(f"Error converting message: {repr(e)}")
             msg.msg_type = -1
-            logging.warning("unknown wechat message type:" + str(wechat_msg_type))
-        msg.content = content
+            msg.content = content
+
         if msg.msg_type != 1 and (msg.content.startswith("Video message")
                                   or msg.content.startswith("Image message")
                                   or msg.content.startswith("Voice message")):
             msg.msg_type = 1
-        # return f"{time} - {sender}: {content}"
+
         return msg
+
+    def convert_text(self, content: str) -> str:
+        return content
+
+    def convert_unknown(self, content: str) -> Tuple[str, int]:
+        logger.warning(f"Unknown WeChat message type")
+        return content, -1
 
     def parse_txt(self, txt_path: str) -> List[str]:
         with open(txt_path, "r", encoding="utf-8") as f:
             all_data = f.readlines()
-            # print(all_data)
-            line_idx = []
-            split_data = []
-            for i, line in enumerate(all_data):
-                if line.startswith("1|") or \
-                        line.startswith("3|") or \
-                        line.startswith("49|") or \
-                        line.startswith("62|") or \
-                        line.startswith("34|") or \
-                        line.startswith("49|") or \
-                        line.startswith("16777265|") or \
-                        line.startswith("1048625|") or \
-                        line.startswith("-1879048186|") or \
-                        line.startswith("419430449|") or \
-                        line.startswith("50|") or \
-                        line.startswith("822083633|") or \
-                        line.startswith("42|") or \
-                        line.startswith("47|") or \
-                        line.startswith("48|") or \
-                        line.startswith("43|"):
-                    line_idx.append(i)
-                    # if line.startswith("1|" or "3|"):
-                #     line_idx.append(i)
-            line_idx.append(len(all_data))
-            for i in range(len(line_idx) - 1):
-                temp = ""
-                for sub_line in all_data[line_idx[i]:line_idx[i + 1]]:
-                    temp = temp + sub_line.strip() + "\n"
-                split_data.append(temp)
+        line_idx = [i for i, line in enumerate(all_data) if line.split("|")[0].isdigit()]
+        line_idx.append(len(all_data))
+        split_data = ["".join(all_data[line_idx[i]:line_idx[i + 1]]).strip() for i in range(len(line_idx) - 1)]
         return split_data
 
-    def msg_list_generator(self, **kwargs):
-        chat_log_file_path = kwargs["chat_log_file_path"]
-        msg_list = []
+    def msg_list_generator(self, chat_log_file_path: str) -> List[Message]:
+        msg_list: List[Message] = []
         split_data_list = self.parse_txt(chat_log_file_path)
         for line in split_data_list:
             msg_list.append(self.convert_msg(line))
         try:
             self.cc.close()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error closing database cursor: {repr(e)}")
         return msg_list
 
 
