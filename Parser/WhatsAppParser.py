@@ -55,7 +55,7 @@ class WhatsAppParser(object):
             msg.sender = item.split(" - ")[1].split(": ")[0]
             msg.content = ": ".join(item.split(": ")[1:]).rstrip("\n")
             if msg.content.endswith(" (file attached)"):
-                filename = msg.content.strip(" (file attached)")
+                filename = msg.content.replace(" (file attached)", "")
                 if filename.endswith(".mp4"):
                     msg.msg_type = 2
                 elif filename.endswith(".jpg") or filename.endswith(".jpeg"):
