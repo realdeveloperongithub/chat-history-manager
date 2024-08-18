@@ -68,7 +68,10 @@ class TelegramParser(object):
                 msg_obj.sender = msg['actor']
                 msg_obj.content = f"{msg['actor']}: {msg['action']}"
             elif msg['type'] == "message":
-                msg_obj.sender = msg['from']
+                if msg['from'] != None:
+                    msg_obj.sender = msg['from']
+                else:
+                    msg_obj.sender = "Deleted Account"
                 if "self_destruct_period_seconds" in msg:
                     # self-destruct video/photo
                     msg_obj.msg_type = 1
@@ -100,6 +103,10 @@ class TelegramParser(object):
                         msg_obj.msg_type = 4
                         msg_obj = self.media_processor(msg_obj, msg['file'], res_dir)
                     elif ("mime_type" in msg) and not msg["mime_type"].startswith("audio") and not msg["mime_type"].startswith("video"):
+                        # file
+                        msg_obj.msg_type = 5
+                        msg_obj = self.media_processor(msg_obj, msg['file'], res_dir)
+                    elif ("media_type" in msg) and msg["media_type"] == "sticker":
                         # file
                         msg_obj.msg_type = 5
                         msg_obj = self.media_processor(msg_obj, msg['file'], res_dir)

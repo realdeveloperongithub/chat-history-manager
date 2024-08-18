@@ -6,6 +6,7 @@ from Message import Message
 from datetime import datetime
 from shutil import copy2
 import os
+import copy
 
 
 class WhatsAppParser(object):
@@ -25,16 +26,17 @@ class WhatsAppParser(object):
             line_idx = []
             split_data = []
             for i, line in enumerate(all_data):
-                if bool(re.search(r"^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{1,2} [AP]M - ", line)):
+                if bool(re.search(r"^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{1,2} [AP]M - ", line)) or bool(re.search(r"^\d{1,2}/\d{1,2}/\d{2}, \d{1,2}:\d{1,2} [AP]M - ", line)):
                     line_idx.append(i)
                     # if line.startswith("1|" or "3|"):
                 #     line_idx.append(i)
             line_idx.append(len(all_data))
             for i in range(len(line_idx) - 1):
                 temp = ""
-                for sub_line in all_data[line_idx[i]:line_idx[i + 1]]:
-                    temp = temp + sub_line.strip() + "\n"
-                split_data.append(temp)
+                if not re.search(r"Your security code with ", all_data[line_idx[i]:line_idx[i + 1]][0]):
+                    for sub_line in all_data[line_idx[i]:line_idx[i + 1]]:
+                        temp = temp + sub_line.strip() + "\n"
+                    split_data.append(temp)
         return split_data
 
     def convert_time(self, timestring: str) -> datetime:
@@ -54,8 +56,8 @@ class WhatsAppParser(object):
             msg.time = self.convert_time(item.split(" - ")[0])
             msg.sender = item.split(" - ")[1].split(": ")[0]
             msg.content = ": ".join(item.split(": ")[1:]).rstrip("\n")
-            if msg.content.endswith(" (file attached)"):
-                filename = msg.content.replace(" (file attached)", "")
+            if " (file attached)" in msg.content:
+                filename = msg.content.split(" (file attached)")[0]
                 if filename.endswith(".mp4"):
                     msg.msg_type = 2
                 elif filename.endswith(".jpg") or filename.endswith(".jpeg"):
@@ -65,7 +67,18 @@ class WhatsAppParser(object):
                 else:
                     msg.msg_type = 5
                 copy2(os.path.join(res_dir, filename), os.path.join(attachment_dir, filename))
+                msg_content = msg.content
                 msg.content = filename
+                if msg_content.endswith(" (file attached)"):
+                    pass
+                    # copy2(os.path.join(res_dir, filename), os.path.join(attachment_dir, filename))
+                    # msg.content = filename
+                else:
+                    file_msg = copy.deepcopy(msg)
+                    msg_list.append(file_msg)
+                    #text msg
+                    msg.content = msg_content.split(" (file attached)\n")[1]
+                    msg.msg_type = 1
             else:
                 msg.msg_type = 1
             if not msg.sender.startswith("Messages and calls are end-to-end encrypted. "):

@@ -101,6 +101,7 @@ class WhatsAppGenerator(object):
         converted_str_list, converted_msg_list = self.generator(msg_list)
         with open(self.result_path, "w", encoding="utf-8") as f:
             f.writelines(converted_str_list)
+        return converted_msg_list
 
 
 if __name__ == '__main__':
